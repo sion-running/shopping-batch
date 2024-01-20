@@ -2,7 +2,6 @@ package sion.test.shoppingbatch;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -13,16 +12,15 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Map;
 
 @Configuration
 @RequiredArgsConstructor
-public class JobParameterConfiguration {
+public class JobExecutionConfiguration {
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
     @Bean
-    public Job job() {
+    public Job batchJob() {
         return jobBuilderFactory.get("job")
                 .start(step1())
                 .next(step2())
@@ -35,14 +33,6 @@ public class JobParameterConfiguration {
                 .tasklet(new Tasklet() {
                     @Override
                     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
-                        JobParameters jobParameters = stepContribution.getStepExecution().getJobExecution().getJobParameters();
-                        jobParameters.getString("name");
-                        jobParameters.getLong("seq");
-                        jobParameters.getDate("date");
-                        jobParameters.getDouble("age");
-
-                        Map<String, Object> jobParametersMap = chunkContext.getStepContext().getJobParameters();
-
                         System.out.println("==================== ");
                         System.out.println(">> hello spring batch ");
                         System.out.println("==================== ");
@@ -62,8 +52,8 @@ public class JobParameterConfiguration {
                         System.out.println("==================== ");
                         System.out.println(">> step 2 was executed ");
                         System.out.println("==================== ");
-
-                        return RepeatStatus.FINISHED;
+                        throw new RuntimeException("step 2 failed");
+//                        return RepeatStatus.FINISHED;
                     }
                 }).build();
     }
