@@ -1,0 +1,22 @@
+package sion.test.shoppingbatch;
+
+import org.springframework.classify.Classifier;
+
+
+import java.util.HashMap;
+import java.util.Map;
+import org.springframework.batch.item.*;
+
+public class ProcessorClassifier<C,T> implements Classifier<C, T> {
+
+    private Map<Integer, ItemProcessor<ProcessorInfo, ProcessorInfo>> processorMap = new HashMap<>();
+
+    @Override
+    public T classify(C classifiable) {
+        return (T) processorMap.get(((ProcessorInfo) classifiable).getId());
+    }
+
+    public void setProcessorMap(Map<Integer, ItemProcessor<ProcessorInfo, ProcessorInfo>> processorMap) {
+        this.processorMap = processorMap;
+    }
+}
